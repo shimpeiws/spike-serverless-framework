@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/shimpeiws/spike-serverless-framework/issues"
   },
-  "homepage": "https://github.com/shimpeiws/spike-serverless-framework#readme"
+  "homepage": "https://github.com/shimpeiws/spike-serverless-framework#readme",
+  "dependencies": {
+    "puppeteer": "^1.12.2"
+  }
 }
