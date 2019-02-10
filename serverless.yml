@@ -32,4 +32,4 @@ functions:
     events:
       - http:
           path: /image-scraper
-          method: GET
+          method: POST
