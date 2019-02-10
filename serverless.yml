@@ -26,6 +26,16 @@ provider:
 plugins:
   - serverless-offline
   - serverless-webpack
+  - serverless-domain-manager
+
+custom:
+  customDomain:
+    domainName: ${self:provider.stage}-spike-serverless.${env:CUSTOM_DOMAIN_NAME}
+    certificateName: ${env:CERTIFICATE_NAME}
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+    endpointType: 'regional'
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
