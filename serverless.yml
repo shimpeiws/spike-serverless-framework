@@ -27,3 +27,9 @@ functions:
       - http:
           path: /hello
           method: GET
+  imageScraper:
+    handler: src/functions/handler.imageScraper
+    events:
+      - http:
+          path: /image-scraper
+          method: GET
