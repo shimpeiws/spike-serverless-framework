@@ -3,7 +3,7 @@ import launchChrome from '@serverless-chrome/lambda';
 import CDP from 'chrome-remote-interface';
 
 export default class ImageScraper {
-  static async images(url) {
+  static async screenshot(url) {
     const slsChrome = await launchChrome();
     const browser = await puppeteer.connect({
       browserWSEndpoint: (await CDP.Version()).webSocketDebuggerUrl
