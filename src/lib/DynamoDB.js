@@ -8,6 +8,6 @@ export default class DynamoDB {
         endpoint: 'http://localhost:8000'
       });
     }
-    return AWS.DynamoDB.DocumentClient();
+    return new AWS.DynamoDB.DocumentClient();
   }
 }
