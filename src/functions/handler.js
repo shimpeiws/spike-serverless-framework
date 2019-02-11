@@ -1,5 +1,6 @@
 import ImageScraper from './ImageScraper';
 import SimplePut from './SimplePut';
+import SearchPixabay from './SearchPixabay';
 
 export const hello = (event, context, callback) => {
   const response = {
@@ -40,5 +41,18 @@ export const simplePut = async (event, context, callback) => {
     })
   };
 
+  callback(null, response);
+};
+
+export const searchPixabay = async (event, context, callback) => {
+  console.info('event', event.queryStringParameters.query);
+  const q = event.queryStringParameters.query;
+  await SearchPixabay.search(q);
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      input: q
+    })
+  };
   callback(null, response);
 };

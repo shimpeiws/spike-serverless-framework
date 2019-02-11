@@ -8,6 +8,8 @@ provider:
   environment:
     DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
     TEST_DYNAMODB_TABLE: test-${self:service}-${self:provider.stage}
+    IMAGES_DYNAMODB_TABLE: images-${self:service}-${self:provider.stage}
+    PIXABAY_API_KEY: ${env:PIXABAY_API_KEY}
 
 plugins:
   - serverless-offline
@@ -56,6 +58,12 @@ functions:
       - http:
           path: /simple-put
           method: POST
+  searchPixabay:
+    handler: src/functions/handler.searchPixabay
+    events:
+      - http:
+          path: /search-pixabay
+          method: GET
 
 resources:
   Resources:
@@ -81,6 +89,19 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: message
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    SpikeServerlessFrameworkImagesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.IMAGES_DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: query
+            AttributeType: S
+        KeySchema:
+          - AttributeName: query
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
