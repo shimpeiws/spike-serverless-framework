@@ -47,7 +47,7 @@ export const simplePut = async (event, context, callback) => {
 export const searchPixabay = async (event, context, callback) => {
   console.info('event', event.queryStringParameters.query);
   const q = event.queryStringParameters.query;
-  await SearchPixabay.search(q);
+  await SearchPixabay.search(q, event);
   const response = {
     statusCode: 200,
     body: JSON.stringify({
