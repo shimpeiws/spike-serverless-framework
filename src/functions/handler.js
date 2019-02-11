@@ -1,4 +1,5 @@
 import ImageScraper from './ImageScraper';
+import SimplePut from './SimplePut';
 
 export const hello = (event, context, callback) => {
   const response = {
@@ -21,6 +22,20 @@ export const imageScraper = async (event, context, callback) => {
     statusCode: 200,
     body: JSON.stringify({
       message: base64Image,
+      input: event.body
+    })
+  };
+
+  callback(null, response);
+};
+
+export const simplePut = async (event, context, callback) => {
+  const message = JSON.parse(event.body).message;
+  await SimplePut.put(message, event);
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      message,
       input: event.body
     })
   };

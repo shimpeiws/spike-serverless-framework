@@ -7,6 +7,7 @@ provider:
   region: ap-northeast-1
   environment:
     DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
+    TEST_DYNAMODB_TABLE: test-${self:service}-${self:provider.stage}
 
 plugins:
   - serverless-offline
@@ -49,6 +50,12 @@ functions:
       - http:
           path: /image-scraper
           method: POST
+  simplePut:
+    handler: src/functions/handler.simplePut
+    events:
+      - http:
+          path: /simple-put
+          method: POST
 
 resources:
   Resources:
@@ -61,6 +68,19 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: url
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    SpikeServerlessFrameworkTestTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TEST_DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: message
+            AttributeType: S
+        KeySchema:
+          - AttributeName: message
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
