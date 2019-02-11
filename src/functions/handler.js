@@ -16,7 +16,7 @@ export const hello = (event, context, callback) => {
 };
 
 export const imageScraper = async (event, context, callback) => {
-  const base64Image = await ImageScraper.screenshot(JSON.parse(event.body).url);
+  const base64Image = await ImageScraper.screenshot(JSON.parse(event.body).url, event);
   const response = {
     statusCode: 200,
     body: JSON.stringify({

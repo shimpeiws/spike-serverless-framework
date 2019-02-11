@@ -5,13 +5,29 @@ provider:
   runtime: nodejs8.10
   stage: dev
   region: ap-northeast-1
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
 
 plugins:
   - serverless-offline
   - serverless-webpack
   - serverless-domain-manager
+  - serverless-dynamodb-local
 
 custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      heapInitial: 200m
+      heapMax: 1g
+      migrate: true
+      seed: true
+      convertEmptyValues: true
+      # dbPath: '<mypath>/'
+      # noStart: true
   customDomain:
     domainName: ${self:provider.stage}-spike-serverless.${env:CUSTOM_DOMAIN_NAME}
     certificateName: ${env:CERTIFICATE_NAME}
@@ -33,3 +49,19 @@ functions:
       - http:
           path: /image-scraper
           method: POST
+
+resources:
+  Resources:
+    SpikeServerlessFrameworkTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: url
+            AttributeType: S
+        KeySchema:
+          - AttributeName: url
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
