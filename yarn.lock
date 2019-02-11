@@ -1715,10 +1715,10 @@ duplexify@^3.4.2, duplexify@^3.6.0:
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
 
-dynamodb-localhost@0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/dynamodb-localhost/-/dynamodb-localhost-0.0.5.tgz#2dfcd5c0ac83e534327f5d5da5dada8d31310755"
-  integrity sha1-LfzVwKyD5TQyf11dpdrajTExB1U=
+dynamodb-localhost@0.0.5, dynamodb-localhost@0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/dynamodb-localhost/-/dynamodb-localhost-0.0.7.tgz#6642d6eb7a29a8c586cc783dd6a59ec3dc00e2ad"
+  integrity sha512-Xyv0EqQDuOVjA8XGVOo3SuzQ5jKA8/gBKUeKRP3V586Fh9abWXLXOGjf7mPO8sWzddzGqyQx2mALj9IWSotg7A==
   dependencies:
     mkdirp "^0.5.0"
     progress "^1.1.8"

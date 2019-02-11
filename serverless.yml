@@ -16,10 +16,18 @@ plugins:
 
 custom:
   dynamodb:
+    stages:
+      - dev
     start:
       port: 8000
       inMemory: true
+      heapInitial: 200m
+      heapMax: 1g
       migrate: true
+      seed: true
+      convertEmptyValues: true
+      # dbPath: '<mypath>/'
+      # noStart: true
   customDomain:
     domainName: ${self:provider.stage}-spike-serverless.${env:CUSTOM_DOMAIN_NAME}
     certificateName: ${env:CERTIFICATE_NAME}
@@ -50,8 +58,6 @@ resources:
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
         AttributeDefinitions:
           - AttributeName: url
-            AttributeType: S
-          - AttributeName: base64Image
             AttributeType: S
         KeySchema:
           - AttributeName: url
