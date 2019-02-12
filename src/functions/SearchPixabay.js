@@ -19,7 +19,7 @@ export default class SearchPixabay {
       }
     });
     console.info('res', res);
-    if (res.data && res.data.hits) {
+    if (!res.data || !res.data.hits) {
       return;
     }
     const sliced = res.data.hits.slice(0, 9);
