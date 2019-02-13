@@ -7,3 +7,4 @@ jspm_packages
 .webpack/**
 .envrc
 .dynamodb
+config/dev.yml
