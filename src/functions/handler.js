@@ -1,6 +1,7 @@
 import ImageScraper from './ImageScraper';
 import SimplePut from './SimplePut';
 import SearchPixabay from './SearchPixabay';
+import SQS from '../lib/SQS';
 
 export const hello = (event, context, callback) => {
   const response = {
@@ -52,6 +53,68 @@ export const searchPixabay = async (event, context, callback) => {
     statusCode: 200,
     body: JSON.stringify({
       input: q
+    })
+  };
+  callback(null, response);
+};
+
+export const putToSQS = (event, context, callback) => {
+  const client = SQS.client(event);
+  const queueName = process.env.TEST_QUEUE_NAME;
+  client.createQueue({ QueueName: queueName }, err => {
+    if (err) {
+      console.info('!!!SQS createQueue error!!!', err);
+      const response = {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: 'Fail createQueue',
+          input: event
+        })
+      };
+      callback(null, response);
+    } else {
+      const message = JSON.parse(event.body).message;
+      const params = {
+        QueueUrl: SQS.queueUrl(queueName, event),
+        MessageBody: message
+      };
+      console.info('!!!SQS MESSAGE PARAMS!!!', params);
+      client.sendMessage(params, (err, data) => {
+        if (err) {
+          console.log('Error create message', err);
+          const response = {
+            statusCode: 400,
+            body: JSON.stringify({
+              message: 'Error!',
+              input: event
+            })
+          };
+          callback(null, response);
+        } else {
+          console.log('Success', data.MessageId);
+          const response = {
+            statusCode: 200,
+            body: JSON.stringify({
+              message: 'Success',
+              input: event
+            })
+          };
+          callback(null, response);
+        }
+      });
+    }
+  });
+};
+
+export const sqsTriggered = async (event, context, callback) => {
+  console.info('!!!event!!!', event.Records[0].body);
+  const query = event.Records[0].body;
+
+  await SearchPixabay.search(query, event);
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      input: query
     })
   };
   callback(null, response);
