@@ -1,6 +1,7 @@
 import ImageScraper from './ImageScraper';
 import SimplePut from './SimplePut';
 import SearchPixabay from './SearchPixabay';
+import SQS from '../lib/SQS';
 
 export const hello = (event, context, callback) => {
   const response = {
@@ -55,4 +56,49 @@ export const searchPixabay = async (event, context, callback) => {
     })
   };
   callback(null, response);
+};
+
+export const puToSQS = (event, context, callback) => {
+  const client = SQS.client(event);
+  const queueName = `puToSQS1234`;
+  client.createQueue({ QueueName: queueName }, err => {
+    if (err) {
+      const response = {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: 'Success',
+          input: event
+        })
+      };
+      callback(null, response);
+    } else {
+      const params = {
+        QueueUrl: SQS.queueUrl(queueName, event),
+        MessageBody: 'Hello'
+      };
+      client.sendMessage(params, (err, data) => {
+        if (err) {
+          console.log('Error', err);
+          const response = {
+            statusCode: 400,
+            body: JSON.stringify({
+              message: 'Error!',
+              input: event
+            })
+          };
+          callback(null, response);
+        } else {
+          console.log('Success', data.MessageId);
+          const response = {
+            statusCode: 200,
+            body: JSON.stringify({
+              message: 'Success',
+              input: event
+            })
+          };
+          callback(null, response);
+        }
+      });
+    }
+  });
 };
