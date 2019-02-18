@@ -16,7 +16,15 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/*-${self:provider.stage}'
+    - Effect: Allow
+      Action:
+        - 'sqs:SendMessage'
+        - 'sqs:GetQueueUrl'
+        - 'sqs:CreateQueue'
+      Resource: 'arn:aws:sqs:${self:provider.region}:*:*-${self:provider.stage}'
   environment:
+    SQS_BASE_URL: ${self:custom.configFile.${self:provider.stage}.SQS_BASE_URL}
+    TEST_QUEUE_NAME: ${self:service}-${self:provider.stage}
     DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
     TEST_DYNAMODB_TABLE: test-${self:service}-${self:provider.stage}
     IMAGES_DYNAMODB_TABLE: images-${self:service}-${self:provider.stage}
@@ -77,9 +85,19 @@ functions:
       - http:
           path: /search-pixabay
           method: GET
+  putToSQS:
+    handler: src/functions/handler.putToSQS
+    events:
+      - http:
+          path: /put-to-sqs
+          method: POST
 
 resources:
   Resources:
+    TestQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:provider.environment.TEST_QUEUE_NAME}
     SpikeServerlessFrameworkTable:
       Type: AWS::DynamoDB::Table
       Properties:

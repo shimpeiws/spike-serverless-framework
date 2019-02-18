@@ -16,7 +16,7 @@ export default class SQS {
     if (event.isOffline) {
       return `${this.LOCAL_ENDPOINT}/queue/${queueName}`;
     }
-    return queueName;
+    return `${process.env.SQS_BASE_URL}/${queueName}`;
   }
   static client(event) {
     if (event.isOffline) {

@@ -58,15 +58,16 @@ export const searchPixabay = async (event, context, callback) => {
   callback(null, response);
 };
 
-export const puToSQS = (event, context, callback) => {
+export const putToSQS = (event, context, callback) => {
   const client = SQS.client(event);
-  const queueName = `puToSQS1234`;
+  const queueName = process.env.TEST_QUEUE_NAME;
   client.createQueue({ QueueName: queueName }, err => {
     if (err) {
+      console.info('!!!SQS createQueue error!!!', err);
       const response = {
         statusCode: 400,
         body: JSON.stringify({
-          message: 'Success',
+          message: 'Fail createQueue',
           input: event
         })
       };
@@ -76,9 +77,10 @@ export const puToSQS = (event, context, callback) => {
         QueueUrl: SQS.queueUrl(queueName, event),
         MessageBody: 'Hello'
       };
+      console.info('!!!SQS MESSAGE PARAMS!!!', params);
       client.sendMessage(params, (err, data) => {
         if (err) {
-          console.log('Error', err);
+          console.log('Error create message', err);
           const response = {
             statusCode: 400,
             body: JSON.stringify({
