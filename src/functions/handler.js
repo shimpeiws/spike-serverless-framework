@@ -73,9 +73,10 @@ export const putToSQS = (event, context, callback) => {
       };
       callback(null, response);
     } else {
+      const message = JSON.parse(event.body).message;
       const params = {
         QueueUrl: SQS.queueUrl(queueName, event),
-        MessageBody: 'Hello'
+        MessageBody: message
       };
       console.info('!!!SQS MESSAGE PARAMS!!!', params);
       client.sendMessage(params, (err, data) => {
@@ -105,16 +106,16 @@ export const putToSQS = (event, context, callback) => {
   });
 };
 
-export const sqsTriggered = (event, context, callback) => {
-  console.info('!!!event body!!!', event.body);
+export const sqsTriggered = async (event, context, callback) => {
+  console.info('!!!event!!!', event.Records[0].body);
+  const query = event.Records[0].body;
 
+  await SearchPixabay.search(query, event);
   const response = {
     statusCode: 200,
     body: JSON.stringify({
-      message: 'sqsTriggered success',
-      input: event
+      input: query
     })
   };
-
   callback(null, response);
 };
