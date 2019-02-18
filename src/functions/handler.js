@@ -104,3 +104,17 @@ export const putToSQS = (event, context, callback) => {
     }
   });
 };
+
+export const sqsTriggered = (event, context, callback) => {
+  console.info('!!!event body!!!', event.body);
+
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: 'sqsTriggered success',
+      input: event
+    })
+  };
+
+  callback(null, response);
+};

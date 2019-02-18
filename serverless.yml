@@ -91,6 +91,14 @@ functions:
       - http:
           path: /put-to-sqs
           method: POST
+  sqsTriggered:
+    handler: src/functions/handler.sqsTriggered
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - TestQueue
+              - Arn
 
 resources:
   Resources:
