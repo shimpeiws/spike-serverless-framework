@@ -1,5 +1,10 @@
 version: 0.2
 
+env:
+  parameter-store:
+    CUSTOM_DOMAIN_NAME: 'dev.CUSTOM_DOMAIN_NAME'
+    CERTIFICATE_NAME: 'dev.CERTIFICATE_NAME'
+
 phases:
   install:
     commands:
