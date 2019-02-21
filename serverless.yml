@@ -67,12 +67,6 @@ functions:
       - http:
           path: /hello
           method: GET
-  imageScraper:
-    handler: src/functions/handler.imageScraper
-    events:
-      - http:
-          path: /image-scraper
-          method: POST
   simplePut:
     handler: src/functions/handler.simplePut
     events:
