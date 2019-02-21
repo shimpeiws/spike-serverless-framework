@@ -1,4 +1,3 @@
-import ImageScraper from './ImageScraper';
 import SimplePut from './SimplePut';
 import SearchPixabay from './SearchPixabay';
 import SQS from '../lib/SQS';
@@ -16,19 +15,6 @@ export const hello = (event, context, callback) => {
 
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
-};
-
-export const imageScraper = async (event, context, callback) => {
-  const base64Image = await ImageScraper.screenshot(JSON.parse(event.body).url, event);
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: base64Image,
-      input: event.body
-    })
-  };
-
-  callback(null, response);
 };
 
 export const simplePut = async (event, context, callback) => {
