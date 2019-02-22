@@ -23,12 +23,12 @@ provider:
         - 'sqs:CreateQueue'
       Resource: 'arn:aws:sqs:${self:provider.region}:*:*-${self:provider.stage}'
   environment:
-    SQS_BASE_URL: ${self:custom.configFile.${self:provider.stage}.SQS_BASE_URL}
+    SQS_BASE_URL: ${env:SQS_BASE_URL}
     TEST_QUEUE_NAME: ${self:service}-${self:provider.stage}
     DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
     TEST_DYNAMODB_TABLE: test-${self:service}-${self:provider.stage}
     IMAGES_DYNAMODB_TABLE: images-${self:service}-${self:provider.stage}
-    PIXABAY_API_KEY: ${self:custom.configFile.${self:provider.stage}.PIXABAY_API_KEY}
+    PIXABAY_API_KEY: ${env:PIXABAY_API_KEY}
 
 plugins:
   - serverless-offline
@@ -57,8 +57,6 @@ custom:
     stage: ${self:provider.stage}
     createRoute53Record: true
     endpointType: 'regional'
-  configFile:
-    dev: ${file(./config/dev.yml)}
 
 functions:
   hello:
