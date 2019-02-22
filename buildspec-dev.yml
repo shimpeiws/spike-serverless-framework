@@ -4,6 +4,8 @@ env:
   parameter-store:
     CUSTOM_DOMAIN_NAME: 'dev.CUSTOM_DOMAIN_NAME'
     CERTIFICATE_NAME: 'dev.CERTIFICATE_NAME'
+    PIXABAY_API_KEY: 'dev.PIXABAY_API_KEY'
+    SQS_BASE_URL: 'dev.SQS_BASE_URL'
 
 phases:
   install:
