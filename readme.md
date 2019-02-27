@@ -12,6 +12,7 @@ export AWS_SECRET_ACCESS_KEY=""
 ## Deploy
 
 serverless deploy -v
+-> Change to using codebuild
 
 ## Local Development
 
