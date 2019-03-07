@@ -101,19 +101,19 @@ functions:
               - TestQueue
               - Arn
   connectionManager:
-    handler: src/handler.connectionManager
+    handler: src/functions/handler.connectionManager
     events:
       - websocket:
           routeKey: $connect
       - websocket:
           routeKey: $disconnect
   defaultMessage:
-    handler: src/handler.defaultMessage
+    handler: src/functions/handler.defaultMessage
     events:
       - websocket:
           routeKey: $default
   sendMessage:
-    handler: src/handler.sendMessage
+    handler: src/functions/handler.sendMessage
     events:
       - websocket:
           routeKey: sendMessage
@@ -165,18 +165,18 @@ resources:
           WriteCapacityUnits: 1
     SpikeServerlessFrameworkConnectionsTable:
       Type: AWS::DynamoDB::Table
-        Properties:
-          TableName: ${self:provider.environment.CONNECTIONS_DYNAMODB_TABLE}
-          AttributeDefinitions:
-            - AttributeName: ConnectionId
-              AttributeType: S
-          KeySchema:
-            - AttributeName: ConnectionId
-              KeyType: HASH
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-          SSESpecification:
-            SSEEnabled: True
-          StreamSpecification:
-            StreamViewType: NEW_AND_OLD_IMAGES
+      Properties:
+        TableName: ${self:provider.environment.CONNECTIONS_DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: ConnectionId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ConnectionId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        SSESpecification:
+          SSEEnabled: True
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES

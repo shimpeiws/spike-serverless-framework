@@ -147,12 +147,12 @@ export const sendMessage = async (event, context, callback) => {
     ProjectionExpression: 'ConnectionId'
   };
   const socketClients = dynamo.scan(params);
-  socketClients.Items.map(({ ConnectionId }) => {
+  socketClients.Items.map(async ({ ConnectionId }) => {
     const request = {
       ConnectionId: ConnectionId,
       Data: JSON.parse(event.body).data
     };
-    await apigateway(event.requestContext).postToConnection(params)
+    await apigateway(event.requestContext).postToConnection(params);
   });
   callback(null, { statusCode: 200, body: JSON.stringify({ message: 'success' }) });
 };
