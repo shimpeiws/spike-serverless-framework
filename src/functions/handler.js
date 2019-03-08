@@ -116,14 +116,14 @@ export const connectionManager = async (event, context, callback) => {
       TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,
       Item: { ConnectionId: event.requestContext.connectionId }
     };
-    await dynamodb.put(params, error => {});
+    await dynamo.put(params, error => {});
     callback(null, { statusCode: 200, body: JSON.stringify({ message: 'connected' }) });
   } else if (event.requestContext.eventType === 'DISCONNECT') {
     const params = {
       TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,
       Key: { ConnectionId: event.requestContext.connectionId }
     };
-    await dynamodb.delete(params, error => {});
+    await dynamo.delete(params, error => {});
     callback(null, { statusCode: 200, body: JSON.stringify({ message: 'disconnected' }) });
   }
 };
@@ -146,13 +146,15 @@ export const sendMessage = async (event, context, callback) => {
     TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,
     ProjectionExpression: 'ConnectionId'
   };
-  const socketClients = dynamo.scan(params);
+  const socketClients = await dynamo.scan(params).promise();
+  console.info('socketClients', socketClients);
   socketClients.Items.map(async ({ ConnectionId }) => {
     const request = {
       ConnectionId: ConnectionId,
       Data: JSON.parse(event.body).data
     };
-    await apigateway(event.requestContext).postToConnection(params);
+    console.info('postToConnection', request);
+    await apiGateway.postToConnection(request).promise();
   });
   callback(null, { statusCode: 200, body: JSON.stringify({ message: 'success' }) });
 };
