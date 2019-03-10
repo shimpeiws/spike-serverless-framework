@@ -82,6 +82,9 @@ export const putToSQS = (event, context, callback) => {
           console.log('Success', data.MessageId);
           const response = {
             statusCode: 200,
+            headers: {
+              'Access-Control-Allow-Origin': '*'
+            },
             body: JSON.stringify({
               message: 'Success',
               input: event

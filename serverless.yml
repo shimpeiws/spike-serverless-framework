@@ -92,6 +92,7 @@ functions:
       - http:
           path: /put-to-sqs
           method: POST
+          cors: true
   sqsTriggered:
     handler: src/functions/handler.sqsTriggered
     events:
