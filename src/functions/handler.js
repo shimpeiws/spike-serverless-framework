@@ -1,6 +1,8 @@
 import SimplePut from './SimplePut';
 import SearchPixabay from './SearchPixabay';
 import SQS from '../lib/SQS';
+import DynamoDB from '../lib/DynamoDB';
+import ApiGateway from '../lib/ApiGateway';
 
 export const hello = (event, context, callback) => {
   const response = {
@@ -104,4 +106,55 @@ export const sqsTriggered = async (event, context, callback) => {
     })
   };
   callback(null, response);
+};
+
+export const connectionManager = async (event, context, callback) => {
+  const dynamo = DynamoDB.client(event);
+  const timestamp = new Date().getTime();
+  if (event.requestContext.eventType === 'CONNECT') {
+    const params = {
+      TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,
+      Item: { ConnectionId: event.requestContext.connectionId }
+    };
+    await dynamo.put(params, error => {});
+    callback(null, { statusCode: 200, body: JSON.stringify({ message: 'connected' }) });
+  } else if (event.requestContext.eventType === 'DISCONNECT') {
+    const params = {
+      TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,
+      Key: { ConnectionId: event.requestContext.connectionId }
+    };
+    await dynamo.delete(params, error => {});
+    callback(null, { statusCode: 200, body: JSON.stringify({ message: 'disconnected' }) });
+  }
+};
+
+export const defaultMessage = async (event, context, callback) => {
+  const params = {
+    ConnectionId: event.requestContext.connectionId,
+    Data: 'Error: Invalid action type'
+  };
+  const apiGateway = ApiGateway.client(event);
+  await apiGateway.postToConnection(params, error => {});
+  callback(null, { statusCode: 500, body: JSON.stringify({ message: 'invalid message' }) });
+};
+
+export const sendMessage = async (event, context, callback) => {
+  const dynamo = DynamoDB.client(event);
+  const apiGateway = ApiGateway.client(event);
+
+  const params = {
+    TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,
+    ProjectionExpression: 'ConnectionId'
+  };
+  const socketClients = await dynamo.scan(params).promise();
+  console.info('socketClients', socketClients);
+  socketClients.Items.map(async ({ ConnectionId }) => {
+    const request = {
+      ConnectionId: ConnectionId,
+      Data: JSON.parse(event.body).data
+    };
+    console.info('postToConnection', request);
+    await apiGateway.postToConnection(request).promise();
+  });
+  callback(null, { statusCode: 200, body: JSON.stringify({ message: 'success' }) });
 };

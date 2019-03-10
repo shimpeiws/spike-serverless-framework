@@ -8,6 +8,11 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - execute-api:ManageConnections
+      Resource:
+        - arn:aws:execute-api:*:*:**/@connections/*
+    - Effect: Allow
+      Action:
         - dynamodb:DescribeTable
         - dynamodb:Query
         - dynamodb:Scan
@@ -28,13 +33,17 @@ provider:
     DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
     TEST_DYNAMODB_TABLE: test-${self:service}-${self:provider.stage}
     IMAGES_DYNAMODB_TABLE: images-${self:service}-${self:provider.stage}
+    CONNECTIONS_DYNAMODB_TABLE: connections-${self:service}-${self:provider.stage}
     PIXABAY_API_KEY: ${env:PIXABAY_API_KEY}
+  websocketApiName: ${self:service.name}-${self:provider.stage}
+  websocketApiRouteSelectionExpression: $request.body.action
 
 plugins:
   - serverless-offline
   - serverless-webpack
   - serverless-domain-manager
   - serverless-dynamodb-local
+  - serverless-websockets-plugin
 
 custom:
   dynamodb:
@@ -91,6 +100,23 @@ functions:
             Fn::GetAtt:
               - TestQueue
               - Arn
+  connectionManager:
+    handler: src/functions/handler.connectionManager
+    events:
+      - websocket:
+          routeKey: $connect
+      - websocket:
+          routeKey: $disconnect
+  defaultMessage:
+    handler: src/functions/handler.defaultMessage
+    events:
+      - websocket:
+          routeKey: $default
+  sendMessage:
+    handler: src/functions/handler.sendMessage
+    events:
+      - websocket:
+          routeKey: sendMessage
 
 resources:
   Resources:
@@ -137,3 +163,20 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    SpikeServerlessFrameworkConnectionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.CONNECTIONS_DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: ConnectionId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ConnectionId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        SSESpecification:
+          SSEEnabled: True
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
