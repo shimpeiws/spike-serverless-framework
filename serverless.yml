@@ -35,6 +35,7 @@ provider:
     IMAGES_DYNAMODB_TABLE: images-${self:service}-${self:provider.stage}
     CONNECTIONS_DYNAMODB_TABLE: connections-${self:service}-${self:provider.stage}
     PIXABAY_API_KEY: ${env:PIXABAY_API_KEY}
+    API_GATEWAY_URL: ${env:API_GATEWAY_URL}
   websocketApiName: ${self:service.name}-${self:provider.stage}
   websocketApiRouteSelectionExpression: $request.body.action
 

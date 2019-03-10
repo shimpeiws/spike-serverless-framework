@@ -95,17 +95,34 @@ export const putToSQS = (event, context, callback) => {
 };
 
 export const sqsTriggered = async (event, context, callback) => {
-  console.info('!!!event!!!', event.Records[0].body);
-  const query = event.Records[0].body;
+  const apiGateway = ApiGateway.client(event);
+  const dynamo = DynamoDB.client(event);
 
   await SearchPixabay.search(query, event);
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      input: query
-    })
+  const query = event.Records[0].body;
+
+  const params = {
+    TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,
+    ProjectionExpression: 'ConnectionId'
   };
-  callback(null, response);
+  const socketClients = await dynamo.scan(params).promise();
+  socketClients.Items.map(async ({ ConnectionId }) => {
+    const imageParams = {
+      TableName: process.env.IMAGES_DYNAMODB_TABLE
+    };
+    const images = await dynamo.scan(imageParams).promise();
+    let resObj = {};
+    images.Items.map(item => {
+      resObj[item.query] = item.urls;
+    });
+    const request = {
+      ConnectionId: ConnectionId,
+      Data: JSON.stringify(resObj)
+    };
+    await apiGateway.postToConnection(request).promise();
+  });
+
+  callback(null, { statusCode: 200, body: JSON.stringify({ message: 'success' }) });
 };
 
 export const connectionManager = async (event, context, callback) => {

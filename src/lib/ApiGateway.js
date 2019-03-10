@@ -4,7 +4,9 @@ export default class ApiGateway {
   static client(config) {
     return new AWS.ApiGatewayManagementApi({
       apiVersion: '2018-11-29',
-      endpoint: `https://${config.requestContext.domainName}/${config.requestContext.stage}`
+      endpoint: config.requestContext
+        ? `https://${config.requestContext.domainName}/${config.requestContext.stage}`
+        : `${process.env.API_GATEWAY_URL}`
     });
   }
 }
