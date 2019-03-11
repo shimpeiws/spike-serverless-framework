@@ -98,11 +98,17 @@ export const putToSQS = (event, context, callback) => {
 };
 
 export const sqsTriggered = async (event, context, callback) => {
-  const apiGateway = ApiGateway.client(event);
   const dynamo = DynamoDB.client(event);
 
   const query = event.Records[0].body;
   await SearchPixabay.search(query, event);
+
+  callback(null, { statusCode: 200, body: JSON.stringify({ message: 'success' }) });
+};
+
+export const dynamoTriggered = async (event, context, callback) => {
+  const apiGateway = ApiGateway.client(event);
+  const dynamo = DynamoDB.client(event);
 
   const params = {
     TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,

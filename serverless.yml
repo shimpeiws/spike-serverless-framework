@@ -119,6 +119,15 @@ functions:
     events:
       - websocket:
           routeKey: sendMessage
+  dynamoTriggered:
+    handler: src/functions/handler.dynamoTriggered
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt:
+              - SpikeServerlessFrameworkImagesTable
+              - StreamArn
 
 resources:
   Resources:
@@ -165,6 +174,8 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
     SpikeServerlessFrameworkConnectionsTable:
       Type: AWS::DynamoDB::Table
       Properties:
