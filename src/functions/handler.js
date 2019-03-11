@@ -82,6 +82,9 @@ export const putToSQS = (event, context, callback) => {
           console.log('Success', data.MessageId);
           const response = {
             statusCode: 200,
+            headers: {
+              'Access-Control-Allow-Origin': '*'
+            },
             body: JSON.stringify({
               message: 'Success',
               input: event
@@ -95,11 +98,17 @@ export const putToSQS = (event, context, callback) => {
 };
 
 export const sqsTriggered = async (event, context, callback) => {
-  const apiGateway = ApiGateway.client(event);
   const dynamo = DynamoDB.client(event);
 
-  await SearchPixabay.search(query, event);
   const query = event.Records[0].body;
+  await SearchPixabay.search(query, event);
+
+  callback(null, { statusCode: 200, body: JSON.stringify({ message: 'success' }) });
+};
+
+export const dynamoTriggered = async (event, context, callback) => {
+  const apiGateway = ApiGateway.client(event);
+  const dynamo = DynamoDB.client(event);
 
   const params = {
     TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,
