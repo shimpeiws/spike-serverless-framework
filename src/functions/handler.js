@@ -111,8 +111,11 @@ export const dynamoTriggered = async (event, context, callback) => {
   const dynamo = DynamoDB.client(event);
 
   console.info('event.Records[0].dynamodb', event.Records[0].dynamodb);
-  console.info('event.Records[0].dynamodb.query', event.Records[0].dynamodb.query);
-  console.info('event.Records[0].dynamodb.urls', event.Records[0].dynamodb.urls);
+  console.info(
+    'event.Records[0].dynamodb.NewImage.query',
+    event.Records[0].dynamodb.NewImage.query
+  );
+  console.info('event.Records[0].dynamodb.NewImage.urls', event.Records[0].dynamodb.NewImage.urls);
 
   const params = {
     TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,
