@@ -110,6 +110,10 @@ export const dynamoTriggered = async (event, context, callback) => {
   const apiGateway = ApiGateway.client(event);
   const dynamo = DynamoDB.client(event);
 
+  console.info('event.Records[0].dynamodb', event.Records[0].dynamodb);
+  console.info('event.Records[0].dynamodb.query', event.Records[0].dynamodb.query);
+  console.info('event.Records[0].dynamodb.urls', event.Records[0].dynamodb.urls);
+
   const params = {
     TableName: process.env.CONNECTIONS_DYNAMODB_TABLE,
     ProjectionExpression: 'ConnectionId'
@@ -124,6 +128,7 @@ export const dynamoTriggered = async (event, context, callback) => {
     images.Items.map(item => {
       resObj[item.query] = item.urls;
     });
+    console.info('resObj', resObj);
     const request = {
       ConnectionId: ConnectionId,
       Data: JSON.stringify(resObj)
