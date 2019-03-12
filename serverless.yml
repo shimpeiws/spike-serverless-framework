@@ -44,7 +44,6 @@ plugins:
   - serverless-webpack
   - serverless-domain-manager
   - serverless-dynamodb-local
-  - serverless-websockets-plugin
 
 custom:
   dynamodb:
@@ -106,19 +105,19 @@ functions:
     handler: src/functions/handler.connectionManager
     events:
       - websocket:
-          routeKey: $connect
+          route: $connect
       - websocket:
-          routeKey: $disconnect
+          route: $disconnect
   defaultMessage:
     handler: src/functions/handler.defaultMessage
     events:
       - websocket:
-          routeKey: $default
+          route: $default
   sendMessage:
     handler: src/functions/handler.sendMessage
     events:
       - websocket:
-          routeKey: sendMessage
+          route: sendMessage
   dynamoTriggered:
     handler: src/functions/handler.dynamoTriggered
     events:
