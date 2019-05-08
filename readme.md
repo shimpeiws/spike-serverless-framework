@@ -11,22 +11,19 @@ export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_ACCESS_KEY"
 export PIXABAY_API_KEY="YOUR_PIXABAY_API_KEY"
 export SQS_BASE_URL="https://sqs.ap-northeast-1.amazonaws.com/XXXXX"
 export API_GATEWAY_URL="https://XXXXX.execute-api.ap-northeast-1.amazonaws.com/XXXXX/"
-
 ```
 
 ## Deploy
 
-serverless deploy -v
--> Change to using codebuild
+`sls deploy -v`
 
 ## Local Development
 
-serverless offline
-
-## Build
-
-serverless webpack
+```
+sls dynamodb install
+sls offline start
+```
 
 ## Create Domain
 
-serverless create_domain
+`sls create_domain`
